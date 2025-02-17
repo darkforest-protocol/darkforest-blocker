@@ -5,10 +5,12 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/yourusername/simple-ua-blocker.git"
+        "url": "git+https://github.com/darkforest-protocol/darkforest-blocker.git"
     },
     "devDependencies": {
         "chai": "^5.2.0",
         "mocha": "^11.1.0"
-    }
+    },
+    "name": "darkforest-blocker",
+    "version": "0.0.1"
 }
