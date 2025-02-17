@@ -1,0 +1,12 @@
+{
+    "scripts": {
+      "test": "mocha test/**/*.test.js",
+      "test:watch": "mocha test/**/*.test.js --watch"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/yourusername/simple-ua-blocker.git"
+    }
+  }
+
+  
