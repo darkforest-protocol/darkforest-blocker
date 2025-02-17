@@ -1,7 +1,7 @@
 {
     "scripts": {
-        "test": "mocha test/**/*.test.js",
-        "test:watch": "mocha test/**/*.test.js --watch"
+        "test": "mocha tests/index.test.js",
+        "test:watch": "mocha tests/index.test.js --watch"
     },
     "repository": {
         "type": "git",
@@ -12,5 +12,5 @@
         "mocha": "^11.1.0"
     },
     "name": "darkforest-blocker",
-    "version": "0.0.1"
+    "version": "0.0.2"
 }
