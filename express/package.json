@@ -1,0 +1,4 @@
+{
+  "main": "../dist/express/index.js",
+  "types": "../dist/express/index.d.ts"
+}

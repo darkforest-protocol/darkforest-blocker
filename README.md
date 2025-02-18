@@ -1,6 +1,17 @@
-# DarkForest Protocol v0
+# DarkForest Blocker
 
-A lightweight application-level middleware to block and redirect AI search bots. Compatible with multiple Node.js web frameworks.
+A framework-agnostic middleware for blocking specific user agents at the application level. Supports Express.js, Next.js, Node.js HTTP, and Vite.
+
+## Features
+
+- 🛡️ Block specific user agents using regex patterns
+- 🔄 Redirect blocked requests to a specified URL
+- 🎯 Customizable HTTP status codes
+- 🔌 Framework adapters for:
+  - Express.js
+  - Next.js (Middleware & API Routes)
+  - Node.js HTTP/HTTPS
+  - Vite Dev Server
 
 ## Installation
 
@@ -12,151 +23,110 @@ npm install darkforest-blocker
 
 ### Express.js
 
-```javascript
-const express = require('express');
-const uaBlocker = require('darkforest-blocker');
+```typescript
+import express from 'express';
+import { createExpressBlocker } from 'darkforest-blocker/express';
 
 const app = express();
 
-app.use(uaBlocker({
-  blockedUserAgents: ['bad-bot', 'scraper'],
-  redirectUrl: 'https://example.com/blocked'  // optional
+app.use(createExpressBlocker({
+  blockedUserAgents: ['bad-bot', 'malicious-crawler'],
+  redirectUrl: 'https://example.com/blocked',  // Optional
+  statusCode: 403  // Optional, defaults to 403
 }));
 ```
 
 ### Next.js
 
-Create a middleware file (```src/middleware.ts``` or ```pages/_middleware.ts``` depending on your Next.js version):
+#### Middleware (app directory or pages/_middleware.ts)
 
 ```typescript
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { uaBlocker } from 'darkforest-blocker';
+import { createNextBlocker } from 'darkforest-blocker/next';
 
-export function middleware(request: NextRequest) {
-  const blocker = uaBlocker({
-    blockedUserAgents: ['bad-bot', 'scraper'],
-    redirectUrl: '/blocked'
-  });
+const { middleware } = createNextBlocker({
+  blockedUserAgents: ['bad-bot']
+});
 
-  // Handle the request
-  const userAgent = request.headers.get('user-agent') || '';
-  const isBlocked = blocker.isBlocked(userAgent);
-
-  if (isBlocked) {
-    return NextResponse.redirect(new URL('/blocked', request.url));
-  }
-
-  return NextResponse.next();
-}
-
-// Configure which paths the middleware runs on
-export const config = {
-  matcher: '/((?!api|_next/static|favicon.ico).*)',
-};
+export default middleware;
 ```
 
-### Koa.js
+#### API Routes
 
-```javascript
-const Koa = require('koa');
-const uaBlocker = require('darkforest-blocker');
+```typescript
+import { createNextBlocker } from 'darkforest-blocker/next';
 
-const app = new Koa();
+const { apiHandler } = createNextBlocker({
+  blockedUserAgents: ['bad-bot']
+});
 
-app.use(async (ctx, next) => {
-  const blocker = uaBlocker({
-    blockedUserAgents: ['bad-bot', 'scraper'],
-    redirectUrl: '/blocked'
+export default function handler(req, res) {
+  return apiHandler(req, res, () => {
+    // Your API route logic here
+    res.status(200).json({ message: 'Hello World' });
   });
+}
+```
 
-  if (blocker.isBlocked(ctx.request.headers['user-agent'])) {
-    ctx.redirect('/blocked');
-    return;
-  }
+### Node.js HTTP
 
-  await next();
+```typescript
+import http from 'http';
+import { createNodeBlocker } from 'darkforest-blocker/node';
+
+const blocker = createNodeBlocker({
+  blockedUserAgents: ['bad-bot']
+});
+
+const server = http.createServer((req, res) => {
+  blocker(req, res, () => {
+    // Your request handling logic here
+    res.end('Hello World!');
+  });
+});
+
+server.listen(3000);
+```
+
+### Vite
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { createViteBlocker } from 'darkforest-blocker/vite';
+
+export default defineConfig({
+  plugins: [
+    createViteBlocker({
+      blockedUserAgents: ['bad-bot']
+    })
+  ]
 });
 ```
 
-### Fastify
+## Configuration Options
 
-```javascript
-const fastify = require('fastify');
-const uaBlocker = require('darkforest-blocker');
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| blockedUserAgents | string[] | Yes | - | Array of user agent strings or regex patterns to block |
+| redirectUrl | string | No | null | URL to redirect blocked requests to |
+| statusCode | number | No | 403 | HTTP status code for blocked requests |
 
-const app = fastify();
+## Response Handling
 
-app.addHook('onRequest', async (request, reply) => {
-  const blocker = uaBlocker({
-    blockedUserAgents: ['bad-bot', 'scraper'],
-    redirectUrl: '/blocked'
-  });
+When a request is blocked:
 
-  if (blocker.isBlocked(request.headers['user-agent'])) {
-    return reply.redirect('/blocked');
-  }
-});
-```
+1. If `redirectUrl` is provided:
+   - The request will be redirected to the specified URL
 
-### NestJS
+2. If no `redirectUrl` is provided:
+   - Returns a JSON response with:
+     - HTTP status code (default: 403)
+     - Error message explaining the block
 
-```typescript
-// ua-blocker.middleware.ts
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import { uaBlocker } from 'darkforest-blocker';
+## License
 
-@Injectable()
-export class UaBlockerMiddleware implements NestMiddleware {
-  private blocker = uaBlocker({
-    blockedUserAgents: ['bad-bot', 'scraper'],
-    redirectUrl: '/blocked'
-  });
+MIT
 
-  use(req: Request, res: Response, next: NextFunction) {
-    if (this.blocker.isBlocked(req.headers['user-agent'])) {
-      return res.redirect('/blocked');
-    }
-    next();
-  }
-}
+## Contributing
 
-// app.module.ts
-@Module({
-  // ...
-})
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(UaBlockerMiddleware)
-      .forRoutes('*');
-  }
-}
-```
-
-## Options
-
-- `blockedUserAgents`: Array of strings or regular expressions to match against user agents
-- `redirectURL`?: Optional URL to redirect blocked requests to, defaults to ...
-- `statusCode`?: Optional HTTP status code for blocked requests (default: 403)
-
-
-## Response
-
-Blocked requests receive a 403 status code with JSON response:
-```json
-{
-  "error": "Access denied based on User-Agent"
-}
-```
-
-## Security Considerations 
-
-This package works only at the application level, after the request reaches your server. For production environments, consider combining with your reverse proxy engine of choice. 
-
-DarkForest Nginx/Apache config integrations are in development. 
-
-Please let us know if you have further requests! ```hello@darkestforest.xyz```
-
-
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

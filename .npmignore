@@ -1,0 +1,52 @@
+# Source files
+src/
+
+# Test files
+tests/
+coverage/
+.nyc_output/
+
+# Configuration files
+.gitignore
+.npmignore
+tsconfig.json
+.editorconfig
+.eslintrc
+.prettierrc
+.travis.yml
+.github/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Development files
+examples/
+scripts/
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+*.tsbuildinfo

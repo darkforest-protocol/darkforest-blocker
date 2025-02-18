@@ -1,0 +1,4 @@
+{
+  "main": "../dist/next/index.js",
+  "types": "../dist/next/index.d.ts"
+}

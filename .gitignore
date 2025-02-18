@@ -1,15 +1,36 @@
 # Dependencies
 node_modules/
 
+# Build output
+dist/
+*.tsbuildinfo
+
 # Logs
+logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# IDE and editors
-.idea/
-.vscode/
+# Editor directories and files
+.idea
+.vscode
 *.swp
-.DS_Store
+*.swo
+*~
 
-# Environment variables
-.env
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# npm package files
+*.tgz
