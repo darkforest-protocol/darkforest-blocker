@@ -12,5 +12,5 @@
         "mocha": "^11.1.0"
     },
     "name": "darkforest-blocker",
-    "version": "0.0.2"
+    "version": "0.0.3"
 }
