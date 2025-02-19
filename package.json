@@ -40,7 +40,8 @@
     "peerDependencies": {
         "express": ">=4.0.0",
         "next": ">=12.0.0",
-        "vite": ">=3.0.0"
+        "vite": ">=3.0.0",
+        "@vercel/edge": ">=1.0.0"
     },
     "peerDependenciesMeta": {
         "express": {
@@ -51,10 +52,39 @@
         },
         "vite": {
             "optional": true
+        },
+        "@vercel/edge": {
+            "optional": true
         }
     },
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./express": {
+            "types": "./dist/express/express.d.ts",
+            "default": "./express/index.js"
+        },
+        "./next": {
+            "types": "./dist/next/next.d.ts",
+            "default": "./next/index.js"
+        },
+        "./node": {
+            "types": "./dist/node/node.d.ts",
+            "default": "./node/index.js"
+        },
+        "./vite": {
+            "types": "./dist/vite/vite.d.ts",
+            "default": "./vite/index.js"
+        },
+        "./vercel": {
+            "types": "./dist/vercel/vercel.d.ts",
+            "default": "./vercel/index.js"
+        }
+    },
     "files": [
         "dist",
         "express",
