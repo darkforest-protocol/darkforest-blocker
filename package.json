@@ -83,6 +83,10 @@
         "./vercel": {
             "types": "./dist/vercel/vercel.d.ts",
             "default": "./vercel/index.js"
+        },
+        "./edge": {
+            "types": "./dist/edge/edge.d.ts",
+            "default": "./edge/index.js"
         }
     },
     "files": [
@@ -91,6 +95,7 @@
         "next",
         "node",
         "vite",
-        "vercel"
+        "vercel",
+        "edge"
     ]
 }

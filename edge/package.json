@@ -1,0 +1,4 @@
+{
+  "main": "../dist/edge/index.js",
+  "types": "../dist/edge/index.d.ts"
+}

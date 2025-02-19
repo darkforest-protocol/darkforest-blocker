@@ -1,0 +1,1 @@
+export { createEdgeMiddleware } from './edge';
