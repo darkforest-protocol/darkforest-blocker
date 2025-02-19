@@ -13,6 +13,7 @@ A framework-agnostic middleware for blocking specific user agents at the applica
   - Next.js (Middleware & API Routes)
   - Node.js HTTP/HTTPS
   - Vite Dev Server
+  - Vercel Edge Middleware
 
 ## Installation
 
@@ -90,6 +91,19 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(3000);
+```
+
+### Vercel Edge Middleware
+
+```typescript
+// middleware.ts
+import { createVercelMiddleware } from 'darkforest-blocker/vercel';
+
+export const middleware = createVercelMiddleware({
+  presetCategories: ['ai-search-bots'],
+  redirectUrl: '/blocked',  // Optional
+  statusCode: 403  // Optional, defaults to 403
+});
 ```
 
 ### Vite

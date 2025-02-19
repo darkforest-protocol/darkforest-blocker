@@ -4,6 +4,7 @@ import { createExpressBlocker } from './express/express';
 import { createNextBlocker } from './next/next';
 import { createNodeBlocker } from './node/node';
 import { createViteBlocker } from './vite/vite';
+import { createVercelMiddleware } from './vercel/vercel';
 
 // Export core functionality
 export { createBlocker };
@@ -14,6 +15,7 @@ export { createExpressBlocker } from './express/express';
 export { createNextBlocker } from './next/next';
 export { createNodeBlocker } from './node/node';
 export { createViteBlocker } from './vite/vite';
+export { createVercelMiddleware } from './vercel/vercel';
 
 // Default export for backward compatibility with current Express middleware
 export default createExpressBlocker;
@@ -23,3 +25,4 @@ export const express = { createExpressBlocker };
 export const next = { createNextBlocker };
 export const node = { createNodeBlocker };
 export const vite = { createViteBlocker };
+export const vercel = { createVercelMiddleware };

@@ -1,0 +1,4 @@
+{
+  "main": "../dist/vercel/index.js",
+  "types": "../dist/vercel/index.d.ts"
+}
