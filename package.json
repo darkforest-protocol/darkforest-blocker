@@ -1,6 +1,6 @@
 {
     "name": "darkforest-blocker",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "A framework-agnostic middleware for blocking specific user agents at the application level",
     "keywords": [
         "user-agent",
