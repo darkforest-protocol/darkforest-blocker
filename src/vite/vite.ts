@@ -17,7 +17,8 @@ export function createViteBlocker(config: BlockerConfig): PluginOption {
       server.middlewares.use((req: Connect.IncomingMessage, res: ServerResponse, next: Connect.NextFunction) => {
         // Adapt Connect request to generic request
         const genericReq: GenericRequest = {
-          userAgent: req.headers['user-agent'] || ''
+          userAgent: req.headers['user-agent'] || '',
+          path: req.url || '/'
         };
 
         // Adapt Connect response to generic response

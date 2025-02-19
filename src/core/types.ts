@@ -1,13 +1,19 @@
+import { BlockerPresetCategory } from './presets';
+
 /**
  * Configuration options for the DarkForest blocker
  */
 export interface BlockerConfig {
-  /** Array of user agent strings or patterns to block */
-  blockedUserAgents: string[];
+  /** Array of preset categories to block */
+  presetCategories?: BlockerPresetCategory[];
+  /** Array of custom user agent strings or patterns to block */
+  customBlockedUserAgents?: string[];
   /** Optional URL to redirect blocked requests to */
   redirectUrl?: string;
   /** HTTP status code for blocked requests (defaults to 403) */
   statusCode?: number;
+  /** Array of path patterns that should be exempt from blocking */
+  exemptPaths?: string[];
 }
 
 /**
@@ -30,6 +36,8 @@ export interface BlockResponse {
 export interface GenericRequest {
   /** User agent string from request headers */
   userAgent: string;
+  /** Request path */
+  path: string;
 }
 
 /**

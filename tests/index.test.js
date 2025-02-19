@@ -20,6 +20,13 @@ describe('uaBlocker', () => {
     })).to.throw('redirectUrl must be a string if provided');
   });
 
+  it('should throw error if exemptPaths is not an array', () => {
+    expect(() => uaBlocker({
+      blockedUserAgents: ['bad-bot'],
+      exemptPaths: '/api'
+    })).to.throw('exemptPaths must be an array if provided');
+  });
+
   describe('when blocking without redirect', () => {
     it('should block matching user agents with JSON response', (done) => {
       const middleware = uaBlocker({
@@ -101,5 +108,78 @@ describe('uaBlocker', () => {
     };
 
     middleware(req, {}, done);
+  });
+
+  describe('when using exempt paths', () => {
+    it('should allow blocked user agents on exempt paths', (done) => {
+      const middleware = uaBlocker({
+        blockedUserAgents: ['bad-bot'],
+        exemptPaths: ['^/api/public/.*']
+      });
+
+      const req = {
+        headers: {
+          'user-agent': 'bad-bot/1.0'
+        },
+        path: '/api/public/endpoint'
+      };
+
+      middleware(req, {}, done); // Should call next() since path is exempt
+    });
+
+    it('should still block non-exempt paths', (done) => {
+      const middleware = uaBlocker({
+        blockedUserAgents: ['bad-bot'],
+        exemptPaths: ['^/api/public/.*']
+      });
+
+      const req = {
+        headers: {
+          'user-agent': 'bad-bot/1.0'
+        },
+        path: '/api/private/endpoint'
+      };
+
+      const res = {
+        status: function(code) {
+          expect(code).to.equal(403);
+          return this;
+        },
+        json: function(data) {
+          expect(data).to.have.property('error');
+          done();
+        }
+      };
+
+      middleware(req, res, () => {
+        done(new Error('next() should not be called'));
+      });
+    });
+
+    it('should handle regex patterns in exempt paths', (done) => {
+      const middleware = uaBlocker({
+        blockedUserAgents: ['bad-bot'],
+        exemptPaths: ['/callback$', '^/health$']
+      });
+
+      const req1 = {
+        headers: {
+          'user-agent': 'bad-bot/1.0'
+        },
+        path: '/auth/callback'
+      };
+
+      const req2 = {
+        headers: {
+          'user-agent': 'bad-bot/1.0'
+        },
+        path: '/health'
+      };
+
+      // Test both paths in sequence
+      middleware(req1, {}, () => {
+        middleware(req2, {}, done);
+      });
+    });
   });
 });

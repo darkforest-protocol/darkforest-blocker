@@ -4,7 +4,8 @@ A framework-agnostic middleware for blocking specific user agents at the applica
 
 ## Features
 
-- 🛡️ Block specific user agents using regex patterns
+- 🛡️ Block specific user agents using preset categories or custom patterns
+  - We use [ai.robots.txt](https://github.com/ai-robots-txt/ai.robots.txt/blob/main/table-of-bot-metrics.md) to provide 46 AI-related user-agents to block.
 - 🔄 Redirect blocked requests to a specified URL
 - 🎯 Customizable HTTP status codes
 - 🔌 Framework adapters for:
@@ -30,7 +31,10 @@ import { createExpressBlocker } from 'darkforest-blocker/express';
 const app = express();
 
 app.use(createExpressBlocker({
-  blockedUserAgents: ['bad-bot', 'malicious-crawler'],
+  // Use preset categories
+  presetCategories: ['ai-search-bots', 'ai-crawl-bots'],
+  // Optionally add custom patterns
+  customBlockedUserAgents: ['additional-bot-pattern'],
   redirectUrl: 'https://example.com/blocked',  // Optional
   statusCode: 403  // Optional, defaults to 403
 }));
@@ -44,7 +48,7 @@ app.use(createExpressBlocker({
 import { createNextBlocker } from 'darkforest-blocker/next';
 
 const { middleware } = createNextBlocker({
-  blockedUserAgents: ['bad-bot']
+  presetCategories: ['ai-search-bots']
 });
 
 export default middleware;
@@ -56,7 +60,8 @@ export default middleware;
 import { createNextBlocker } from 'darkforest-blocker/next';
 
 const { apiHandler } = createNextBlocker({
-  blockedUserAgents: ['bad-bot']
+  presetCategories: ['ai-search-bots'],
+  customBlockedUserAgents: ['custom-bot']
 });
 
 export default function handler(req, res) {
@@ -74,7 +79,7 @@ import http from 'http';
 import { createNodeBlocker } from 'darkforest-blocker/node';
 
 const blocker = createNodeBlocker({
-  blockedUserAgents: ['bad-bot']
+  presetCategories: ['ai-search-bots', 'ai-crawl-bots']
 });
 
 const server = http.createServer((req, res) => {
@@ -97,7 +102,7 @@ import { createViteBlocker } from 'darkforest-blocker/vite';
 export default defineConfig({
   plugins: [
     createViteBlocker({
-      blockedUserAgents: ['bad-bot']
+      presetCategories: ['ai-search-bots']
     })
   ]
 });
@@ -107,16 +112,60 @@ export default defineConfig({
 
 | Option | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
-| blockedUserAgents | string[] | Yes | - | Array of user agent strings or regex patterns to block |
+| presetCategories | string[] | No* | - | Array of preset categories to block ('ai-search-bots', 'ai-crawl-bots') |
+| customBlockedUserAgents | string[] | No* | - | Array of custom user agent strings or regex patterns to block |
 | redirectUrl | string | No | null | URL to redirect blocked requests to |
 | statusCode | number | No | 403 | HTTP status code for blocked requests |
+| exemptPaths | string[] | No | [] | Array of path patterns that should be exempt from blocking |
+
+\* Either `presetCategories` or `customBlockedUserAgents` must be provided
+
+## Preset Categories
+
+The package includes predefined categories of user agents to block:
+
+- `ai-search-bots`: Common AI-powered search engine bots
+- `ai-crawl-bots`: AI-powered web crawlers and scrapers
+
+You can use these categories alone or combine them with custom patterns:
+
+```typescript
+createExpressBlocker({
+  // Use both preset categories
+  presetCategories: ['ai-search-bots', 'ai-crawl-bots'],
+  // Add your own patterns
+  customBlockedUserAgents: [
+    'custom-bot',
+    'specific-crawler'
+  ]
+});
+```
+
+## Path Exemption
+
+The `exemptPaths` option allows you to specify paths that should be exempt from blocking, even if the user agent matches a blocked pattern. 
+
+WARNING: If redirecting to any path `/redirected_to` on your site, you must add `/redirected_to` to `exemptPaths`! (Or else the user-agent will enter an infinite redirect loop)
+
+```typescript
+createExpressBlocker({
+  presetCategories: ['ai-search-bots'],
+  exemptPaths: [
+    '^/health$',        // Exact match for /health
+    '^/api/public/.*',  // Any path starting with /api/public/
+    '/callback$'        // Any path ending with /callback
+  ]
+});
+```
+
+Path patterns are treated as regular expressions, so you can use regex patterns to match multiple paths or create more complex matching rules.
 
 ## Response Handling
 
 When a request is blocked:
 
 1. If `redirectUrl` is provided:
-   - The request will be redirected to the specified URL
+   - The request will be redirected to the specified URL (i.e., an AI landing page)
 
 2. If no `redirectUrl` is provided:
    - Returns a JSON response with:

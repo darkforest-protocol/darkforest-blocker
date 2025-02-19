@@ -17,7 +17,8 @@ export function createNodeBlocker(config: BlockerConfig) {
   ) {
     // Adapt Node.js request to generic request
     const genericReq: GenericRequest = {
-      userAgent: req.headers['user-agent'] || ''
+      userAgent: req.headers['user-agent'] || '',
+      path: req.url || '/'
     };
 
     // Adapt Node.js response to generic response

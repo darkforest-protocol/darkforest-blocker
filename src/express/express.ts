@@ -13,7 +13,8 @@ export function createExpressBlocker(config: BlockerConfig) {
   return function expressMiddleware(req: Request, res: Response, next: NextFunction) {
     // Adapt Express request to generic request
     const genericReq: GenericRequest = {
-      userAgent: req.headers['user-agent'] || ''
+      userAgent: req.headers['user-agent'] || '',
+      path: req.path
     };
 
     // Adapt Express response to generic response

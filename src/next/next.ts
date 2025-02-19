@@ -15,7 +15,8 @@ export function createNextMiddleware(config: BlockerConfig) {
     return new Promise<NextResponse | undefined>((resolve) => {
       // Adapt Next.js request to generic request
       const genericReq: GenericRequest = {
-        userAgent: req.headers.get('user-agent') || ''
+        userAgent: req.headers.get('user-agent') || '',
+        path: req.nextUrl.pathname
       };
 
       // Adapt Next.js response to generic response
@@ -53,7 +54,8 @@ export function createNextApiHandler(config: BlockerConfig) {
   ) {
     // Adapt Next.js API request to generic request
     const genericReq: GenericRequest = {
-      userAgent: req.headers['user-agent'] as string || ''
+      userAgent: req.headers['user-agent'] as string || '',
+      path: req.url || '/'
     };
 
     // Adapt Next.js API response to generic response
