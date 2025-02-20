@@ -1,4 +1,4 @@
 {
-  "main": "../dist/vercel/index.js",
-  "types": "../dist/vercel/index.d.ts"
+  "main": "./index.js",
+  "types": "../dist/vercel/vercel.d.ts"
 }
